@@ -10,6 +10,8 @@ namespace Weaver
 	class UDPSocket
 	{
 	public:
+		sockaddr_in remote_addr;
+
 		UDPSocket(uint16_t port = 0);
 		//void bind
 	private:

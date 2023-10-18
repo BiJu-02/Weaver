@@ -1,6 +1,7 @@
 #include "packet.h"
 
 #include <cstring>
+#include <iostream>
 
 namespace Weaver
 {
@@ -19,6 +20,20 @@ namespace Weaver
 		: size(p.size), buffer(new char[p.size])
 	{
 		std::memcpy(buffer, p.buffer, p.size);
+	}
+
+	Packet::Packet(const Packet* p)
+	{
+		if (p)
+		{
+			size = p->size;
+			buffer = new char[p->size];
+			std::memcpy(buffer, p->buffer, p->size);
+		}
+		else
+		{
+			throw std::invalid_argument("null pointer passed in constructor\n");
+		}
 	}
 
 	Packet::~Packet()

@@ -14,6 +14,7 @@ namespace Weaver
 		Packet(uint32_t sz);
 		Packet(const char* buf, uint32_t sz);
 		Packet(const Packet& p);
+		Packet(const Packet* p);
 		~Packet();
 	};
 
