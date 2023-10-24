@@ -75,8 +75,7 @@ namespace Weaver
 		_callback_handler_running = false;
 		_callback_handler_cv.notify_one();
 		_callback_handler_thread.join();
-		// close _receiver_sock and delete it
-
+		delete _receiver_sock;
 	}
 
 	void NetWeave::start_sender(uint16_t port)
@@ -104,8 +103,7 @@ namespace Weaver
 	{
 		_sender_running = false;
 		_sender_thread.join();
-		// close _sender_sock and delete it
-
+		delete _sender_sock;
 	}
 
 	void NetWeave::send_data(const Packet& pck)
@@ -170,16 +168,12 @@ namespace Weaver
 	void NetWeave::_receiver_loop()
 	{
 		std::unique_lock<std::mutex> lock(_receiver_q_mtx, std::defer_lock);
-		Packet* temp_packet;
+		Weaver::Packet* temp_packet;
 		while (_receiver_running)
 		{
 			temp_packet = new Packet(_max_buffer_size);
 
-			////// socket recv code start //////
-
-
-
-			////// socket recv code ends //////
+			_receiver_sock->receive(temp_packet);
 			
 			lock.lock();
 			_receiver_data_q.push(temp_packet);
@@ -213,11 +207,7 @@ namespace Weaver
 					temp_packet = internal_q.front();
 					internal_q.pop();
 
-					////// socket send code start //////
-
-
-
-					////// socket send code ends //////
+					_sender_sock->send(temp_packet);
 
 					delete temp_packet;
 				}

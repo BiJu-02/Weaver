@@ -4,12 +4,14 @@
 
 #ifdef _WIN32
 
+#define _WIN32_WINNT 0x0600
+
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
-#else
+#else	// _WIN32
 
 #include <arpa/inet.h>
 #include <errorno.h>
@@ -31,6 +33,7 @@ inline bool sock_init()
 		return false;
 	}
 #endif	// _WIN32
+
 	return true;
 
 }
@@ -43,6 +46,25 @@ inline int get_sock_error()
 #else
 	return errno;
 #endif
+
+}
+
+inline bool timeout_occured()
+{
+
+#ifdef _WIN32
+	if (WSAGetLastError() == WSAETIMEDOUT)
+	{
+		return true;
+	}
+#else
+	if (errno == EWOULDBLOCK || errno == EAGAIN)
+	{
+		return true;
+	}
+#endif
+
+	return false;
 
 }
 

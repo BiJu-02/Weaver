@@ -24,7 +24,7 @@ namespace Weaver
 		void start_receiver(uint16_t port, std::function<void(Packet*, NetWeave*)> cb);
 		void stop_receiver();
 
-		void start_sender(uint16_t port);
+		void start_sender(uint16_t port = 0);
 		void stop_sender();
 
 		// need overloads for this?!...to delete or not delete pck

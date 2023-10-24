@@ -1,3 +1,4 @@
+
 #include "packet.h"
 
 #include <cstring>
@@ -8,7 +9,9 @@ namespace Weaver
 
 	Packet::Packet(uint32_t sz)
 		: size(sz), buffer(new char[sz])
-	{ }
+	{
+		clear();
+	}
 
 	Packet::Packet(const char* buf, uint32_t sz)
 		: size(sz), buffer(new char[sz])
@@ -20,6 +23,7 @@ namespace Weaver
 		: size(p.size), buffer(new char[p.size])
 	{
 		std::memcpy(buffer, p.buffer, p.size);
+		std::memcpy((void*)&remote_addr, (void*)&(p.remote_addr), sizeof(sockaddr));
 	}
 
 	Packet::Packet(const Packet* p)
@@ -29,6 +33,7 @@ namespace Weaver
 			size = p->size;
 			buffer = new char[p->size];
 			std::memcpy(buffer, p->buffer, p->size);
+			std::memcpy((void*)&remote_addr, (void*)&(p->remote_addr), sizeof(sockaddr));
 		}
 		else
 		{
@@ -39,6 +44,11 @@ namespace Weaver
 	Packet::~Packet()
 	{
 		delete[] buffer;
+	}
+
+	void inline Packet::clear()
+	{
+		std::memset(buffer, 0, sizeof(buffer));
 	}
 
 }
