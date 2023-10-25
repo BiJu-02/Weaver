@@ -40,6 +40,8 @@ namespace Weaver
 	void NetWeave::test_func()
 	{
 		std::cout << "so far so good\n";
+		const char* msg = "hell0";
+		Weaver::Packet p = Weaver::Packet(msg, sizeof(msg), 0, "127.0.0.1");
 	}
 
 
@@ -102,6 +104,7 @@ namespace Weaver
 	void NetWeave::stop_sender()
 	{
 		_sender_running = false;
+		_sender_cv.notify_one();
 		_sender_thread.join();
 		delete _sender_sock;
 	}
@@ -175,10 +178,13 @@ namespace Weaver
 
 			_receiver_sock->receive(temp_packet);
 			
-			lock.lock();
-			_receiver_data_q.push(temp_packet);
-			lock.unlock();
-			_callback_handler_cv.notify_one();
+			if (temp_packet->content_size > 0)
+			{
+				lock.lock();
+				_receiver_data_q.push(temp_packet);
+				lock.unlock();
+				_callback_handler_cv.notify_one();
+			}
 
 		}
 		// if internal queue is required...clean up here before returning
